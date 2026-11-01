@@ -22,7 +22,7 @@ class ScorerTests(unittest.TestCase):
         cls.thread = threading.Thread(target=cls.server.serve_forever, daemon=True)
         cls.thread.start()
         cls.playwright = sync_playwright().start()
-        cls.browser = cls.playwright.chromium.launch(executable_path=os.environ.get('CHROMIUM_PATH', '/usr/bin/chromium'), args=['--no-sandbox'])
+        cls.browser = cls.playwright.chromium.launch(executable_path=os.environ.get('CHROMIUM_PATH'), args=['--no-sandbox'])
 
     @classmethod
     def tearDownClass(cls):
@@ -151,6 +151,28 @@ class ScorerTests(unittest.TestCase):
         self.page.locator('#playersTab').click()
         self.assertEqual(self.page.locator('[data-roster="5"]').input_value(), 'Test player 6')
         self.assertEqual(self.page.locator('[data-pair]').nth(5).input_value(), 'Test player 6')
+
+    def test_partnership_tiles_advance_at_boundary_and_restore_after_undo(self):
+        def tile(label):
+            return self.page.locator('.stat-tile').filter(has=self.page.get_by_text(label, exact=True)).locator('strong').text_content()
+
+        self.run_js('for(let i=0;i<23;i++) bat(1)')
+        self.assertEqual(tile('Current pair runs'), '23')
+        self.run_js('dot()')
+        self.assertEqual(tile('Current batting pair'), 'Test player 3 & Test player 4')
+        self.assertEqual(tile('Current pair runs'), '0')
+        self.assertEqual(tile('Current pair dots'), '0')
+        self.assertEqual(tile('Average partnership'), '23.0')
+        self.run_js('bat(4)')
+        self.assertEqual(tile('Current pair runs'), '4')
+        self.assertEqual(tile('Average partnership'), '13.5')
+        self.assertEqual(tile('Highest partnership'), '23')
+        self.page.reload()
+        self.assertEqual(tile('Current pair runs'), '4')
+        self.run_js('undo(); undo()')
+        self.assertEqual(tile('Current batting pair'), 'Test player 1 & Test player 2')
+        self.assertEqual(tile('Current pair runs'), '23')
+        self.assertEqual(self.run_js('events[0].pairNames'), ['Test player 1', 'Test player 2'])
 
     def test_mobile_over_circles_are_evenly_spaced(self):
         for width in [320, 375, 430]:

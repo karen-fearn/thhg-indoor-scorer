@@ -43,7 +43,15 @@ python3 -m pip install -r tests/requirements.txt
 python3 -m unittest discover -s tests -p '*_test.py' -v
 ```
 
-Set `CHROMIUM_PATH` to your Chromium executable if it is not `/usr/bin/chromium`.
+Run `python3 -m playwright install chromium` to install the test browser. Tests use
+Playwright's managed Chromium by default; set `CHROMIUM_PATH` to use a system browser.
 Coverage includes runs, all extras, wicket deductions, final-over counting,
 striker rotation, innings-specific undo, player validation and persistence,
 mobile over-circle spacing, and automatic offline loading. No build is needed.
+
+GitHub Actions runs the Node suite and Chromium browser regressions on pushes and
+pull requests. Partnership statistics use distinct four-over slots for either
+innings. Current-pair runs and dots reset at a pair boundary; average and highest
+include only slots with recorded deliveries. These are gross runs including
+extras, consistent with the existing partnership display; wicket deductions still
+apply to the net score. Recorded pair names are retained on new deliveries.
