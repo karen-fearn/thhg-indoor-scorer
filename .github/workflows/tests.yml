@@ -21,6 +21,9 @@ jobs:
           python-version: '3.12'
           cache: pip
           cache-dependency-path: tests/requirements.txt
+      - name: Check JavaScript syntax
+        run: |
+          for file in js/*.js service-worker.js; do node --check "$file"; done
       - name: Run scoring and asset tests
         run: node --test tests/*.test.cjs
       - name: Install browser test dependencies

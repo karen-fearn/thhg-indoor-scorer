@@ -174,6 +174,27 @@ class ScorerTests(unittest.TestCase):
         self.assertEqual(tile('Current pair runs'), '23')
         self.assertEqual(self.run_js('events[0].pairNames'), ['Test player 1', 'Test player 2'])
 
+    def test_mid_match_order_change_preserves_historical_statistics(self):
+        self.run_js('bat(4); dot()')
+        before_events = self.run_js('JSON.stringify(events)')
+        before_tiles = self.page.locator('#liveStatGrid').inner_text()
+        before_scorecard = self.page.locator('#batterTable').text_content()
+        self.page.locator('#playersTab').click()
+        self.page.locator('#orderDetails').evaluate('(el)=>el.open=true')
+        for i, field in enumerate(self.page.locator('[data-pair]').all()):
+            field.select_option(f'Test player {(i + 2) % 6 + 1}')
+        self.page.get_by_role('button', name='Save order', exact=True).click()
+        self.assertEqual(self.page.locator('#orderStatus').text_content(), 'Players and order saved.')
+        self.assertEqual(self.run_js('JSON.stringify(events)'), before_events)
+        self.assertEqual(self.page.locator('#liveStatGrid').inner_text(), before_tiles)
+        self.assertEqual(self.page.locator('#batterTable').text_content(), before_scorecard)
+        self.page.reload()
+        self.assertEqual(self.page.locator('#liveStatGrid').inner_text(), before_tiles)
+        self.assertEqual(self.run_js('JSON.stringify(events)'), before_events)
+        self.run_js('bat(2)')
+        self.assertEqual(self.run_js('events.at(-1).pairNames'), ['Test player 3', 'Test player 4'])
+        self.assertEqual(self.run_js('events[0].pairNames'), ['Test player 1', 'Test player 2'])
+
     def test_mobile_over_circles_are_evenly_spaced(self):
         for width in [320, 375, 430]:
             self.page.set_viewport_size({'width': width, 'height': 800})

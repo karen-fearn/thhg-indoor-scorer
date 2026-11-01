@@ -55,3 +55,7 @@ innings. Current-pair runs and dots reset at a pair boundary; average and highes
 include only slots with recorded deliveries. These are gross runs including
 extras, consistent with the existing partnership display; wicket deductions still
 apply to the net score. Recorded pair names are retained on new deliveries.
+
+Editing a batting order affects future deliveries. Recorded partnership names and
+figures are derived from delivery snapshots, including after a reload; legacy
+deliveries retain their recorded batter names where available.

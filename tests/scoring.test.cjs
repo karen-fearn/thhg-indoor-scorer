@@ -53,7 +53,7 @@ test('uncounted final-over extras do not change strike at the boundary', () => {
 
 const lineup = [['A', 'B'], ['C', 'D'], ['E', 'F']];
 const partnershipStats = events => rules.partnerships(events, lineup, ['Visitor 1', 'Visitor 2'], true);
-const deliveries = (count, runs = 0) => Array.from({length: count}, () => ({type: 'bat', runs, legal: 1, batter: 'A'}));
+const deliveries = (count, runs = 0) => Array.from({length: count}, () => ({type: 'bat', runs, legal: 1}));
 
 test('partnerships advance immediately at four-over boundaries', () => {
   for (const [count, pair] of [[0, 0], [23, 0], [24, 1], [47, 1], [48, 2], [72, 2]]) {

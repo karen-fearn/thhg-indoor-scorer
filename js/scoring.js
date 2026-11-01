@@ -33,7 +33,7 @@
       const current = slots[currentIndex] || {runs: 0, dots: 0};
       const values = slots.filter(Boolean).map(slot => slot.runs);
       return {
-        currentNames: batting ? pairs[currentIndex] : oppositionNames,
+        currentNames: current.names?.length ? [...current.names] : (batting ? pairs[currentIndex] : oppositionNames),
         currentRuns: current.runs,
         currentDots: current.dots,
         slots,
