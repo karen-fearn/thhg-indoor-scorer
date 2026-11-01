@@ -1,0 +1,20 @@
+name: Tests
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Check JavaScript syntax
+        run: |
+          node --check js/app.js
+          node --check service-worker.js
+      - name: Run smoke and partnership regression tests
+        run: node --test tests/*.test.cjs
