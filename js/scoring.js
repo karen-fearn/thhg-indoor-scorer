@@ -45,7 +45,9 @@
       return !['wide', 'noball'].includes(type) || counted < Math.max(0, (overs - 1) * 6);
     },
     changesEnds(event) {
-      return ['bat', 'wicket', 'bye', 'legbye'].includes(event.type) && event.runs % 2 === 1;
+      if (event.completedRuns !== undefined) return Boolean(event.wicket) !== (event.completedRuns % 2 === 1);
+      if (event.wicket) return true;
+      return ['bat', 'bye', 'legbye'].includes(event.type) && event.runs % 2 === 1;
     },
     nextStriker(names, previous, counted, resetPair) {
       if (!previous) return names[0];
