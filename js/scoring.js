@@ -45,7 +45,7 @@
       return !['wide', 'noball'].includes(type) || counted < Math.max(0, (overs - 1) * 6);
     },
     changesEnds(event) {
-      return ['bat', 'wicket', 'bye', 'legbye'].includes(event.type) && event.runs % 2 === 1;
+      if (event.type === 'wicket') return true; // Every dismissal changes ends in softball pairs.\n      if (Number.isInteger(event.completedRuns)) return event.completedRuns % 2 === 1;\n      return ['bat', 'bye', 'legbye'].includes(event.type) && event.runs % 2 === 1;
     },
     nextStriker(names, previous, counted, resetPair) {
       if (!previous) return names[0];
