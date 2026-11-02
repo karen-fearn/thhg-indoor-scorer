@@ -57,3 +57,29 @@ body{font:16px system-ui;margin:0;background:#edf3ef;color:#14251d}header{backgr
 .official-table th{background:#eaf3ec;color:#234c32;font-weight:750}
 .official-table td:not(:first-child),.official-table th:not(:first-child){font-variant-numeric:tabular-nums}
 #officialScorecard h3{font-size:14px;margin:16px 0 7px}
+
+/* Paper score sheet adapted to a narrow phone screen. */
+.sheet-pair{margin:15px 0 20px;border:1px solid #dce8dd;border-radius:12px;padding:10px;background:#fbfdfb}
+.sheet-pair h3{display:flex;justify-content:space-between;gap:8px;margin:0 0 10px!important;color:#1c5537}
+.sheet-pair h3 small{font-weight:500;color:#718176}
+.sheet-pair-names{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-bottom:10px}
+.sheet-pair-names>div{display:flex;flex-direction:column;gap:3px;background:#eaf3ec;border-radius:8px;padding:8px;min-width:0}
+.sheet-pair-names strong{font-size:12px;overflow-wrap:anywhere}
+.sheet-pair-names span{font-size:11px;color:#496350}
+.sheet-over-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.sheet-over{border:1px solid #d8e5da;border-radius:9px;background:white;padding:8px;min-width:0}
+.sheet-over-title{font-weight:800;color:#205b3a;font-size:13px}
+.sheet-over-bowler{font-size:11px;color:#617569;min-height:27px;overflow-wrap:anywhere}
+.sheet-balls{display:flex;flex-wrap:wrap;gap:3px;margin:6px 0}
+.sheet-ball{display:inline-flex;justify-content:center;align-items:center;min-width:20px;height:22px;border-radius:5px;background:#e1efe5;color:#195537;font-size:10px;font-weight:750;padding:0 2px}
+.sheet-ball.sheet-wicket{background:#a43b35;color:white}
+.sheet-ball.sheet-extra{background:#f5e6b7;color:#745112}
+.sheet-ball.sheet-empty{background:#edf0ed;color:#839387}
+.sheet-over-figures{font-size:11px;color:#4d6253}
+.sheet-over-net{font-weight:800;font-size:14px;color:#205b3a;margin-top:4px}
+.sheet-summary{margin-top:14px}
+.sheet-summary-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+.sheet-summary-grid>div{display:flex;flex-direction:column;gap:5px;background:#eaf3ec;border-radius:8px;padding:9px;min-width:0}
+.sheet-summary-grid span{font-size:11px;color:#47604d}
+.sheet-summary-grid strong{font-size:18px;color:#195537;font-variant-numeric:tabular-nums}
+@media(max-width:360px){.sheet-over-grid{gap:5px}.sheet-over{padding:6px}.sheet-ball{min-width:18px;height:20px}}
