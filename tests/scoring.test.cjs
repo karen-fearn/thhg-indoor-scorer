@@ -100,3 +100,18 @@ test('editing lineup names cannot regroup recorded partnerships', () => {
   assert.equal(result.highest, 24);
   assert.deepEqual(result.slots[0].names, ['Original', 'Partner']);
 });
+
+
+test('indoor softball dismissals always change ends', () => {
+  assert.equal(rules.changesEnds({type:'wicket',wicket:1,runs:0}),true);
+  assert.equal(rules.nextStriker(['A','B'],{type:'wicket',wicket:1,batter:'A',runs:0,legal:1},1,true),'B');
+});
+test('completed runs on wides and no-balls change ends independently of penalty runs', () => {
+  assert.equal(rules.changesEnds({type:'wide',runs:4,completedRuns:1}),true);
+  assert.equal(rules.changesEnds({type:'wide',runs:6,completedRuns:2}),false);
+  assert.equal(rules.changesEnds({type:'noball',runs:8,completedRuns:1,batRuns:4}),true);
+  assert.equal(rules.changesEnds({type:'noball',runs:6,completedRuns:0,batRuns:4}),false);
+});
+test('wicket change of ends combines with completed running', () => {
+  assert.equal(rules.changesEnds({type:'wicket',wicket:1,runs:2,completedRuns:1}),false);
+});
