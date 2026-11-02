@@ -49,3 +49,11 @@ body{font:16px system-ui;margin:0;background:#edf3ef;color:#14251d}header{backgr
 #history .history-entry.history-runs{border-left-color:#176447;background:#f2f8f4}
 #history .history-entry.history-wicket{border-left-color:#b44139;background:#fff5f3}
 #history .history-entry.history-extra{border-left-color:#c69c38;background:#fffbef}
+
+/* Official scorecard: horizontally scrollable tables, no changes to scoring layout. */
+.official-scroll{overflow-x:auto;max-width:100%;margin-bottom:14px}
+.official-table{width:100%;border-collapse:collapse;font-size:12px;white-space:nowrap}
+.official-table th,.official-table td{padding:9px 8px;border-bottom:1px solid #e1e9e2;text-align:left}
+.official-table th{background:#eaf3ec;color:#234c32;font-weight:750}
+.official-table td:not(:first-child),.official-table th:not(:first-child){font-variant-numeric:tabular-nums}
+#officialScorecard h3{font-size:14px;margin:16px 0 7px}
