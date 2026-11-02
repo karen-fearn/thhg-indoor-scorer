@@ -28,10 +28,12 @@ test('wides and no-balls count before the final over only', () => {
 });
 
 test('only odd completed runs rotate strike', () => {
-  for (const type of ['bat', 'wicket', 'bye', 'legbye']) {
+  for (const type of ['bat', 'bye', 'legbye']) {
     assert.equal(rules.changesEnds({type, runs: 1}), true);
     assert.equal(rules.changesEnds({type, runs: 2}), false);
   }
+  assert.equal(rules.changesEnds({type:'wicket', wicket:1, runs:0}), true);
+  assert.equal(rules.changesEnds({type:'wicket', wicket:1, runs:2}), true);
   for (const type of ['wide', 'noball', 'custom', 'dot']) {
     assert.equal(rules.changesEnds({type, runs: 1}), false);
   }
