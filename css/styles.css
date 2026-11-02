@@ -28,12 +28,5 @@ body{font:16px system-ui;margin:0;background:#edf3ef;color:#14251d}header{backgr
 #history .history-people{border-top:0}
 
 .history-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.history-actions button{min-width:0;padding:10px 4px;font-size:clamp(11px,3vw,13px);min-height:44px}
-
-/* Align the six delivery markers directly above the six score labels. */
-.stats{column-gap:0}
-.delivery-stat{padding-left:0;padding-right:0}
-#currentOverGraphic{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:0;width:100%;justify-items:center;box-sizing:border-box}
-#currentOverGraphic .over-ball{width:min(34px,78%);max-width:34px;margin:0}
-.minor-stat{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;text-align:center;padding:0 1px}
-.minor-stat span{display:flex;align-items:flex-end;justify-content:center;min-height:27px;line-height:1.15;white-space:normal;letter-spacing:-.2px;text-align:center}
-.minor-stat b{margin-top:3px;font-variant-numeric:tabular-nums}
+/* Keep the original stats layout; only prevent the delivery label wrapping. */
+.delivery-stat #overs{display:block;white-space:nowrap;font-size:clamp(15px,4.5vw,21px)!important}
