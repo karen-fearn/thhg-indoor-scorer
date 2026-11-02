@@ -22,26 +22,36 @@ save()}function save(){localStorage.setItem('thhg-events',JSON.stringify(events)
 }
 
 function renderOfficialScorecard(){
- const es=currentEvents(),batters=new Map(),bowlers=new Map(),overs=new Map();let counted=0;
+ const es=currentEvents(), batters=new Map(), overs=Array.from({length:12},(_,i)=>({number:i+1,events:[],runs:0,wickets:0,bowlers:new Set(),net:200})); 
+ const extras={wide:0,noball:0,bye:0,legbye:0};let counted=0,totalRuns=0,totalWickets=0;
+ const batting=sideFor(currentInnings)==='THHG batting';
+ const names=batting?matchOrder.pairs.flat():oppositionBatters();
+ for(const name of names)if(name&&!batters.has(name))batters.set(name,{runs:0,wickets:0});
  for(const e of es){
-  const over=Math.floor(counted/6)+1;
-  const batter=e.batter||'Unknown batter',bowler=e.bowler||'Unknown bowler';
-  if(!batters.has(batter))batters.set(batter,{runs:0,balls:0,outs:0});
-  if(!bowlers.has(bowler))bowlers.set(bowler,{runs:0,balls:0,wickets:0});
-  if(!overs.has(over))overs.set(over,{runs:0,wickets:0,bowler:new Set()});
-  const b=batters.get(batter),w=bowlers.get(bowler),o=overs.get(over);
-  const batRuns=e.type==='bat'||e.type==='wicket'?e.runs:e.type==='noball'?(e.batRuns||0):0;
-  b.runs+=batRuns;b.balls+=e.legal||0;
-  w.runs+=e.runs||0;w.balls+=e.legal||0;
-  o.runs+=e.runs||0;o.wickets+=e.wicket?1:0;o.bowler.add(bowler);
-  if(e.wicket){const dismissed=e.outBatter||batter;if(!batters.has(dismissed))batters.set(dismissed,{runs:0,balls:0,outs:0});batters.get(dismissed).outs++;if(e.dismissal!=='runout'&&e.dismissal!=='run out'&&e.dismissal!=='Run out')w.wickets++}
-  counted+=e.legal||0;
+  const overIndex=Math.min(11,Math.floor(counted/6)),o=overs[overIndex],name=e.batter||'Unknown batter';
+  if(!batters.has(name))batters.set(name,{runs:0,wickets:0});
+  const runs=e.type==='bat'||e.type==='wicket'?e.runs:e.type==='noball'?(e.batRuns||0):0;
+  batters.get(name).runs+=runs;
+  if(e.wicket){const out=e.outBatter||name;if(!batters.has(out))batters.set(out,{runs:0,wickets:0});batters.get(out).wickets++}
+  if(Object.prototype.hasOwnProperty.call(extras,e.type))extras[e.type]+=e.runs||0;
+  o.events.push(e);o.runs+=e.runs||0;o.wickets+=e.wicket?1:0;o.bowlers.add(e.bowler||'Unknown bowler');
+  totalRuns+=e.runs||0;totalWickets+=e.wicket?1:0;counted+=e.legal||0;
  }
- const table=(headers,rows)=>'<div class="official-scroll"><table class="official-table"><thead><tr>'+headers.map(x=>'<th>'+x+'</th>').join('')+'</tr></thead><tbody>'+ (rows.length?rows.map(row=>'<tr>'+row.map(x=>'<td>'+escapeHtml(x)+'</td>').join('')+'</tr>').join(''):'<tr><td colspan="'+headers.length+'">No deliveries recorded</td></tr>')+'</tbody></table></div>';
- const batting=Array.from(batters,([name,v])=>[name,v.runs,v.balls,v.outs]);
- const bowling=Array.from(bowlers,([name,v])=>[name,Math.floor(v.balls/6)+'.'+v.balls%6,v.runs,v.wickets]);
- const overRows=Array.from(overs,([n,v])=>[n,Array.from(v.bowler).join(', '),v.runs,v.wickets]);
- $('officialScorecard').innerHTML='<h3>Batting</h3>'+table(['Batter','Runs','Balls','Outs'],batting)+'<h3>Bowling</h3>'+table(['Bowler','Overs','Runs','Wkts'],bowling)+'<h3>Over by over</h3>'+table(['Over','Bowler','Runs','Wkts'],overRows);
+ let cumulative=200;
+ for(const o of overs){cumulative+=o.runs-5*o.wickets;o.net=cumulative}
+ const pill=e=>'<span class="sheet-ball '+(e.wicket?'sheet-wicket':e.type==='wide'||e.type==='noball'?'sheet-extra':'')+'">'+escapeHtml(e.wicket?'−5':e.type==='wide'?'Wd':e.type==='noball'?'NB':e.runs||0)+'</span>';
+ let html='';
+ for(let pair=0;pair<3;pair++){
+  const pairNames=names.slice(pair*2,pair*2+2),section=overs.slice(pair*4,pair*4+4);
+  html+='<section class="sheet-pair"><h3>Batting pair '+(pair+1)+' <small>Overs '+(pair*4+1)+'–'+(pair*4+4)+'</small></h3><div class="sheet-pair-names">'+pairNames.map(n=>'<div><strong>'+escapeHtml(n||'Batter')+'</strong><span>'+((batters.get(n)||{}).runs||0)+' runs · '+((batters.get(n)||{}).wickets||0)+' wickets lost</span></div>').join('')+'</div><div class="sheet-over-grid">';
+  for(const o of section){
+   html+='<div class="sheet-over"><div class="sheet-over-title">Over '+o.number+'</div><div class="sheet-over-bowler">'+escapeHtml([...o.bowlers].join(', ')||'Awaiting bowler')+'</div><div class="sheet-balls">'+o.events.map(pill).join('')+Array.from({length:Math.max(0,6-o.events.filter(e=>e.legal).length)},()=>'<span class="sheet-ball sheet-empty">·</span>').join('')+'</div><div class="sheet-over-figures">Runs '+o.runs+' · Wkts '+o.wickets+'</div><div class="sheet-over-net">Net '+o.net+'</div></div>';
+  }
+  html+='</div></section>';
+ }
+ const extraTotal=Object.values(extras).reduce((a,b)=>a+b,0);
+ html+='<section class="sheet-summary"><h3>Extras summary</h3><div class="sheet-summary-grid">'+[['Wides',extras.wide],['No-balls',extras.noball],['Byes',extras.bye],['Leg-byes',extras.legbye],['Total extras',extraTotal]].map(([k,v])=>'<div><span>'+k+'</span><strong>'+v+'</strong></div>').join('')+'</div><h3>Innings summary</h3><div class="sheet-summary-grid">'+[['Runs scored',totalRuns],['Wickets × 5',totalWickets*5],['Final net',200+totalRuns-totalWickets*5]].map(([k,v])=>'<div><span>'+k+'</span><strong>'+v+'</strong></div>').join('')+'</div></section>';
+ $('officialScorecard').innerHTML=html;
 }
 function renderLiveStats() {
   renderOfficialScorecard();
