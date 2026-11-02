@@ -1,4 +1,4 @@
-const CACHE = 'thhg-indoor-scorer-v5';
+const CACHE = 'thhg-indoor-scorer-v6';
 const ASSETS = ['./','./index.html','./css/styles.css','./js/app.js','./js/players.js','./js/scoring.js','./manifest.webmanifest','./icon-180.png','./icon-192.png','./icon-512.png'];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(ASSETS)).then(() => self.skipWaiting()));
