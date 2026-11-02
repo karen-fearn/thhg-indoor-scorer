@@ -30,11 +30,11 @@ function renderOfficialScorecard(){
   if(!bowlers.has(bowler))bowlers.set(bowler,{runs:0,balls:0,wickets:0});
   if(!overs.has(over))overs.set(over,{runs:0,wickets:0,bowler:new Set()});
   const b=batters.get(batter),w=bowlers.get(bowler),o=overs.get(over);
-  const batRuns=e.type==='bat'?e.runs:e.type==='noball'?(e.batRuns||0):0;
+  const batRuns=e.type==='bat'||e.type==='wicket'?e.runs:e.type==='noball'?(e.batRuns||0):0;
   b.runs+=batRuns;b.balls+=e.legal||0;
   w.runs+=e.runs||0;w.balls+=e.legal||0;
   o.runs+=e.runs||0;o.wickets+=e.wicket?1:0;o.bowler.add(bowler);
-  if(e.wicket){const dismissed=e.outBatter||batter;if(!batters.has(dismissed))batters.set(dismissed,{runs:0,balls:0,outs:0});batters.get(dismissed).outs++;w.wickets++}
+  if(e.wicket){const dismissed=e.outBatter||batter;if(!batters.has(dismissed))batters.set(dismissed,{runs:0,balls:0,outs:0});batters.get(dismissed).outs++;if(e.dismissal!=='runout'&&e.dismissal!=='run out'&&e.dismissal!=='Run out')w.wickets++}
   counted+=e.legal||0;
  }
  const table=(headers,rows)=>'<div class="official-scroll"><table class="official-table"><thead><tr>'+headers.map(x=>'<th>'+x+'</th>').join('')+'</tr></thead><tbody>'+ (rows.length?rows.map(row=>'<tr>'+row.map(x=>'<td>'+escapeHtml(x)+'</td>').join('')+'</tr>').join(''):'<tr><td colspan="'+headers.length+'">No deliveries recorded</td></tr>')+'</tbody></table></div>';
