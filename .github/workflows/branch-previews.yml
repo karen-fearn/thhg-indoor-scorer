@@ -55,6 +55,10 @@ jobs:
           # Stamp the exact source revision so testers can identify their loaded preview.
           BUILD_SHA=$(git -C source rev-parse --short=7 HEAD)
           sed -i "s/Version 0.6.0 · main/Version 0.6.0 · preview $BUILD_SHA/g" "published/previews/$PREVIEW_NAME/index.html"
+          # Cache-bust all assets with the same source revision shown in the footer.
+          sed -i "s|./js/scoring.js?v=7|./js/scoring.js?v=$BUILD_SHA|g; s|./js/players.js?v=7|./js/players.js?v=$BUILD_SHA|g; s|./js/app.js?v=7|./js/app.js?v=$BUILD_SHA|g; s|./css/styles.css|./css/styles.css?v=$BUILD_SHA|g" "published/previews/$PREVIEW_NAME/index.html"
+          # Disable service workers in previews to avoid stale scripts on phones.
+          sed -i 's|<script>if ("serviceWorker" in navigator.*</script></body>|</body>|' "published/previews/$PREVIEW_NAME/index.html"
           # Avoid the preview PWA's service worker affecting the live site.
           sed -i "s/thhg-indoor-scorer-v/thhg-preview-$PREVIEW_NAME-v/g" "published/previews/$PREVIEW_NAME/service-worker.js"
       - name: Publish preview to GitHub Pages source
