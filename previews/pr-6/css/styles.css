@@ -26,3 +26,5 @@ body{font:16px system-ui;margin:0;background:#edf3ef;color:#14251d}header{backgr
 /* No duplicate horizontal rules inside or underneath ball history tiles. */
 #history .history-entry,#history .history-entry:last-child{border-bottom:0}
 #history .history-people{border-top:0}
+
+.history-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.history-actions button{min-width:0;padding:10px 4px;font-size:clamp(11px,3vw,13px);min-height:44px}
