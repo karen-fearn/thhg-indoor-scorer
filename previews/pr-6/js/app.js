@@ -21,7 +21,30 @@ save()}function save(){localStorage.setItem('thhg-events',JSON.stringify(events)
   window.scrollTo(0, 0);
 }
 
+function renderOfficialScorecard(){
+ const es=currentEvents(),batters=new Map(),bowlers=new Map(),overs=new Map();let counted=0;
+ for(const e of es){
+  const over=Math.floor(counted/6)+1;
+  const batter=e.batter||'Unknown batter',bowler=e.bowler||'Unknown bowler';
+  if(!batters.has(batter))batters.set(batter,{runs:0,balls:0,outs:0});
+  if(!bowlers.has(bowler))bowlers.set(bowler,{runs:0,balls:0,wickets:0});
+  if(!overs.has(over))overs.set(over,{runs:0,wickets:0,bowler:new Set()});
+  const b=batters.get(batter),w=bowlers.get(bowler),o=overs.get(over);
+  const batRuns=e.type==='bat'?e.runs:e.type==='noball'?(e.batRuns||0):0;
+  b.runs+=batRuns;b.balls+=e.legal||0;
+  w.runs+=e.runs||0;w.balls+=e.legal||0;
+  o.runs+=e.runs||0;o.wickets+=e.wicket?1:0;o.bowler.add(bowler);
+  if(e.wicket){const dismissed=e.outBatter||batter;if(!batters.has(dismissed))batters.set(dismissed,{runs:0,balls:0,outs:0});batters.get(dismissed).outs++;w.wickets++}
+  counted+=e.legal||0;
+ }
+ const table=(headers,rows)=>'<div class="official-scroll"><table class="official-table"><thead><tr>'+headers.map(x=>'<th>'+x+'</th>').join('')+'</tr></thead><tbody>'+ (rows.length?rows.map(row=>'<tr>'+row.map(x=>'<td>'+escapeHtml(x)+'</td>').join('')+'</tr>').join(''):'<tr><td colspan="'+headers.length+'">No deliveries recorded</td></tr>')+'</tbody></table></div>';
+ const batting=Array.from(batters,([name,v])=>[name,v.runs,v.balls,v.outs]);
+ const bowling=Array.from(bowlers,([name,v])=>[name,Math.floor(v.balls/6)+'.'+v.balls%6,v.runs,v.wickets]);
+ const overRows=Array.from(overs,([n,v])=>[n,Array.from(v.bowler).join(', '),v.runs,v.wickets]);
+ $('officialScorecard').innerHTML='<h3>Batting</h3>'+table(['Batter','Runs','Balls','Outs'],batting)+'<h3>Bowling</h3>'+table(['Bowler','Overs','Runs','Wkts'],bowling)+'<h3>Over by over</h3>'+table(['Over','Bowler','Runs','Wkts'],overRows);
+}
 function renderLiveStats() {
+  renderOfficialScorecard();
   const es = currentEvents();
   const partnership = ScoringRules.partnerships(es, matchOrder.pairs, oppositionBatters(), sideFor(currentInnings) === 'THHG batting');
   const pairName = partnership.currentNames.filter(Boolean).join(' & ');
