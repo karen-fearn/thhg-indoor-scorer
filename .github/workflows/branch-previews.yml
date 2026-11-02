@@ -1,0 +1,68 @@
+name: Publish branch previews
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: Branch to preview
+        required: true
+        default: fix/partnership-statistics
+      preview_name:
+        description: Preview folder name (letters, numbers, hyphens)
+        required: true
+        default: partnership-statistics
+
+permissions:
+  contents: write
+
+concurrency:
+  group: scorer-preview-publish
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out branch being previewed
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.branch || github.event.pull_request.head.sha }}
+          path: source
+      - name: Check out published site
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          path: published
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Copy site into isolated preview folder
+        env:
+          PREVIEW_NAME: ${{ github.event_name == 'workflow_dispatch' && inputs.preview_name || format('pr-{0}', github.event.pull_request.number) }}
+        run: |
+          set -eu
+          case "$PREVIEW_NAME" in *[!a-zA-Z0-9-]*|'') echo 'Invalid preview name'; exit 1;; esac
+          mkdir -p "published/previews/$PREVIEW_NAME"
+          rm -rf "published/previews/$PREVIEW_NAME"/*
+          cp source/index.html source/manifest.webmanifest source/service-worker.js "published/previews/$PREVIEW_NAME/"
+          cp -R source/css source/js "published/previews/$PREVIEW_NAME/"
+          cp source/icon-*.png "published/previews/$PREVIEW_NAME/"
+          # Avoid the preview PWA's service worker affecting the live site.
+          sed -i "s/thhg-indoor-scorer-v/thhg-preview-$PREVIEW_NAME-v/g" "published/previews/$PREVIEW_NAME/service-worker.js"
+      - name: Publish preview to GitHub Pages source
+        working-directory: published
+        env:
+          PREVIEW_NAME: ${{ github.event_name == 'workflow_dispatch' && inputs.preview_name || format('pr-{0}', github.event.pull_request.number) }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "previews/$PREVIEW_NAME"
+          if ! git diff --cached --quiet; then
+            git commit -m "Preview: update $PREVIEW_NAME [skip ci]"
+            git push origin HEAD:main
+          fi
+      - name: Preview URL
+        env:
+          PREVIEW_NAME: ${{ github.event_name == 'workflow_dispatch' && inputs.preview_name || format('pr-{0}', github.event.pull_request.number) }}
+        run: echo "https://karen-fearn.github.io/thhg-indoor-scorer/previews/$PREVIEW_NAME/" >> "$GITHUB_STEP_SUMMARY"
