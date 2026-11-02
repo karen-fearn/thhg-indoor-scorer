@@ -30,3 +30,6 @@ body{font:16px system-ui;margin:0;background:#edf3ef;color:#14251d}header{backgr
 .history-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.history-actions button{min-width:0;padding:10px 4px;font-size:clamp(11px,3vw,13px);min-height:44px}
 /* Keep the original stats layout; only prevent the delivery label wrapping. */
 .delivery-stat #overs{display:block;white-space:nowrap;font-size:clamp(15px,4.5vw,21px)!important}
+
+/* Preserve the original complete-over wording without a second line on phones. */
+.delivery-stat #overs{white-space:nowrap;font-size:clamp(10px,2.55vw,16px)!important;letter-spacing:-.25px}
