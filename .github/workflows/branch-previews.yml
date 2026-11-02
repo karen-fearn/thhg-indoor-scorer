@@ -48,6 +48,10 @@ jobs:
           cp source/index.html source/manifest.webmanifest source/service-worker.js "published/previews/$PREVIEW_NAME/"
           cp -R source/css source/js "published/previews/$PREVIEW_NAME/"
           cp source/icon-*.png "published/previews/$PREVIEW_NAME/"
+          # Handbook is uploaded to main and shared by every preview.
+          if [ -f "published/SYW&G Indoor Handbook 2026-27.pdf" ]; then
+            cp "published/SYW&G Indoor Handbook 2026-27.pdf" "published/previews/$PREVIEW_NAME/"
+          fi
           # Avoid the preview PWA's service worker affecting the live site.
           sed -i "s/thhg-indoor-scorer-v/thhg-preview-$PREVIEW_NAME-v/g" "published/previews/$PREVIEW_NAME/service-worker.js"
       - name: Publish preview to GitHub Pages source
