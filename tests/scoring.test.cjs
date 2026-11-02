@@ -28,13 +28,27 @@ test('wides and no-balls count before the final over only', () => {
 });
 
 test('only odd completed runs rotate strike', () => {
-  for (const type of ['bat', 'wicket', 'bye', 'legbye']) {
+  for (const type of ['bat', 'bye', 'legbye']) {
     assert.equal(rules.changesEnds({type, runs: 1}), true);
     assert.equal(rules.changesEnds({type, runs: 2}), false);
   }
   for (const type of ['wide', 'noball', 'custom', 'dot']) {
     assert.equal(rules.changesEnds({type, runs: 1}), false);
   }
+});
+
+test('indoor softball dismissal always changes ends', () => {
+  assert.equal(rules.changesEnds({type: 'wicket', runs: 0}), true);
+  assert.equal(rules.changesEnds({type: 'wicket', runs: 2}), true);
+  assert.equal(rules.nextStriker(['A', 'B'], {type:'wicket', batter:'A', runs:0, legal:1}, 1, true), 'B');
+});
+
+test('completed running on wides and no-balls changes strike independently of awarded runs', () => {
+  assert.equal(rules.changesEnds({type:'wide', runs:4, completedRuns:1}), true);
+  assert.equal(rules.changesEnds({type:'wide', runs:6, completedRuns:2}), false);
+  assert.equal(rules.changesEnds({type:'noball', runs:7, completedRuns:1, batRuns:3}), true);
+  assert.equal(rules.changesEnds({type:'noball', runs:3, completedRuns:0, batRuns:1}), false);
+  assert.equal(rules.nextStriker(['A','B'], {type:'wide', batter:'A', runs:4, completedRuns:1, legal:1}, 1, true), 'B');
 });
 
 test('over-end changes combine with running and pair changes', () => {
