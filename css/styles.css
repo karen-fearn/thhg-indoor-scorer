@@ -11,3 +11,14 @@ body{font:16px system-ui;margin:0;background:#edf3ef;color:#14251d}header{backgr
 .history-main{display:flex;align-items:baseline;justify-content:space-between;gap:10px}.history-meta{white-space:normal}.history-time{font-size:12px;color:#65776b;white-space:nowrap}.history-people{display:flex;flex-wrap:wrap;column-gap:16px;row-gap:2px;font-size:13px;color:#44584c;margin-top:3px}.history-people b{color:#294433}.history-detail{font-size:12px;color:#65776b;margin-top:3px}
 
 .history-compact{display:flex;align-items:center;gap:8px;min-width:0;padding:8px 0;white-space:nowrap;font-size:13px}.history-ball{flex:0 0 28px;color:#607567;font-variant-numeric:tabular-nums;font-weight:700}.history-result{flex:0 0 auto;color:#264e35;font-size:13px}.history-names{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;color:#4c6155}.history-extra{flex:0 0 auto;color:#65776b;font-size:12px}
+
+/* Ball history: individual compact scorecard tiles, retaining two-line details. */
+#history{display:grid;gap:9px}
+#history .history-entry{background:#f7faf7;border:1px solid #dde8df;border-left:4px solid #608a69;border-radius:11px;padding:11px 12px;line-height:1.45;box-shadow:0 1px 2px rgba(20,55,30,.04)}
+#history .history-entry:last-child{border-bottom:1px solid #dde8df}
+#history .history-main{align-items:flex-start;gap:8px}
+#history .history-meta{font-size:13px;line-height:1.4;color:#244632;margin:0;font-weight:750}
+#history .history-time{font-size:11px;color:#718176;padding-top:2px}
+#history .history-people{border-top:1px solid #e6eee7;padding-top:6px;margin-top:7px;font-size:12px;color:#53695a;gap:4px 15px}
+#history .history-people b{font-weight:650;color:#355440}
+#history .history-detail{font-size:12px;margin-top:6px;color:#5e7062}
