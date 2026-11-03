@@ -83,3 +83,8 @@ body{font:16px system-ui;margin:0;background:#edf3ef;color:#14251d}header{backgr
 .sheet-summary-grid span{font-size:11px;color:#47604d}
 .sheet-summary-grid strong{font-size:18px;color:#195537;font-variant-numeric:tabular-nums}
 @media(max-width:360px){.sheet-over-grid{gap:5px}.sheet-over{padding:6px}.sheet-ball{min-width:18px;height:20px}}
+
+.sheet-match-details,.sheet-result{display:flex;flex-direction:column;gap:5px;padding:11px 12px;border-radius:10px;background:#eaf3ec;margin:10px 0;color:#234d34;font-size:12px}
+.sheet-match-details strong,.sheet-result strong{font-size:14px}
+.sheet-result{background:#f1f7f2;border-left:4px solid #176447}
+#officialBowlingStats h3{font-size:14px;margin:16px 0 7px}
