@@ -21,6 +21,27 @@ save()}function save(){localStorage.setItem('thhg-events',JSON.stringify(events)
   window.scrollTo(0, 0);
 }
 
+function renderMatchOverview(){
+ const opponent=($('opponentName').value||'Opposition').trim(),away=$('homeAway').value==='away';
+ const home=away?opponent:'THHG',visitors=away?'THHG':opponent;
+ const date=$('matchDate').value,venue=$('matchVenue').value;
+ $('officialMatchDetails').innerHTML='<div class="sheet-match-details"><strong>'+escapeHtml(home)+' (Home) v '+escapeHtml(visitors)+' (Away)</strong><span>'+escapeHtml(date||'Date not set')+' · '+escapeHtml(venue||'Venue not set')+'</span><span>Innings: '+escapeHtml(sideFor(currentInnings)==='THHG batting'?'THHG':opponent)+'</span></div>';
+ const first=inningsStats(1),second=inningsStats(2),hasSecond=events.some(e=>(e.inningsNumber||1)===2);
+ let msg='Match in progress';
+ if(first.legal>=72&&second.legal>=72){const a=200+first.runs-first.outs*5,b=200+second.runs-second.outs*5;msg=a===b?'Match tied':(a>b?(sideFor(1)==='THHG batting'?'THHG':opponent):(sideFor(2)==='THHG batting'?'THHG':opponent))+' won by '+Math.abs(a-b)+' net runs'}
+ $('matchResultSummary').innerHTML='<div class="sheet-result"><strong>'+escapeHtml(msg)+'</strong><span>'+escapeHtml(sideFor(1)==='THHG batting'?'THHG':opponent)+': '+(200+first.runs-first.outs*5)+' net'+(hasSecond?' · '+escapeHtml(sideFor(2)==='THHG batting'?'THHG':opponent)+': '+(200+second.runs-second.outs*5)+' net':'')+'</span></div>';
+}
+function renderOfficialBowling(){
+ const bowlers=new Map();
+ for(const e of currentEvents()){
+  const name=e.bowler||'Unknown bowler';if(!bowlers.has(name))bowlers.set(name,{balls:0,runs:0,wickets:0});
+  const b=bowlers.get(name);b.balls+=e.legal||0;
+  b.runs+=(e.type==='bye'||e.type==='legbye')?0:(e.runs||0);
+  if(e.wicket&&!/run\s*out/i.test(e.dismissal||''))b.wickets++;
+ }
+ const rows=[...bowlers].map(([name,b])=>'<tr><td>'+escapeHtml(name)+'</td><td>'+Math.floor(b.balls/6)+'.'+b.balls%6+'</td><td>'+b.runs+'</td><td>'+b.wickets+'</td></tr>').join('');
+ $('officialBowlingStats').innerHTML='<h3>Bowling figures</h3><div class="official-scroll"><table class="official-table"><thead><tr><th>Bowler</th><th>Overs</th><th>Runs</th><th>Wkts</th></tr></thead><tbody>'+(rows||'<tr><td colspan="4">No deliveries yet</td></tr>')+'</tbody></table></div>';
+}
 function renderOfficialScorecard(){
  const es=currentEvents(), batters=new Map(), overs=Array.from({length:12},(_,i)=>({number:i+1,events:[],runs:0,wickets:0,bowlers:new Set(),net:200})); 
  const extras={wide:0,noball:0,bye:0,legbye:0};let counted=0,totalRuns=0,totalWickets=0;
@@ -54,7 +75,9 @@ function renderOfficialScorecard(){
  $('officialScorecard').innerHTML=html;
 }
 function renderLiveStats() {
+  renderMatchOverview();
   renderOfficialScorecard();
+  renderOfficialBowling();
   const es = currentEvents();
   const partnership = ScoringRules.partnerships(es, matchOrder.pairs, oppositionBatters(), sideFor(currentInnings) === 'THHG batting');
   const pairName = partnership.currentNames.filter(Boolean).join(' & ');
