@@ -88,3 +88,5 @@ body{font:16px system-ui;margin:0;background:#edf3ef;color:#14251d}header{backgr
 .sheet-match-details strong,.sheet-result strong{font-size:14px}
 .sheet-result{background:#f1f7f2;border-left:4px solid #176447}
 #officialBowlingStats h3{font-size:14px;margin:16px 0 7px}
+
+.player-setup h2{margin-bottom:7px}.player-setup-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.player-setup-grid label{min-width:0}.player-setup input,.player-setup select{width:100%;box-sizing:border-box}.player-pair{padding:11px 0;border-top:1px solid #e2ebe4}.player-pair:first-of-type{border-top:0}.player-pair h3{display:flex;justify-content:space-between;gap:8px;margin:0 0 6px;color:#205b3a;font-size:14px}.player-pair h3 small{font-size:11px;font-weight:500;color:#637668}.player-setup .muted{margin:6px 0 12px}@media(max-width:340px){.player-setup-grid{gap:6px}.player-setup-grid input{padding:9px 6px}}
