@@ -118,6 +118,12 @@ class ScorerTests(unittest.TestCase):
     def test_pairs_and_bowling_rotation(self):
         self.run_js('for(let i=0;i<24;i++) dot()')
         self.assertEqual(self.page.locator('#striker').input_value(), 'Test player 3')
+        # Each team bats once: switching before the first 12 overs is blocked.
+        self.page.locator('#inningsSide').select_option('THHG bowling')
+        self.assertEqual(self.run_js('stats().legal'), 24)
+        self.assertEqual(self.page.locator('#inningsSide').input_value(), 'THHG batting')
+        self.run_js('for(let i=0;i<48;i++) dot()')
+        self.page.on('dialog', lambda dialog: dialog.accept())
         self.page.locator('#inningsSide').select_option('THHG bowling')
         self.assertEqual(self.run_js('stats().legal'), 0)
         self.assertEqual(self.page.locator('#bowler').input_value(), 'Test player 1')
@@ -125,7 +131,7 @@ class ScorerTests(unittest.TestCase):
         self.assertEqual(self.page.locator('#bowler').input_value(), 'Test player 1')
         self.run_js('undo()')
         self.assertEqual(self.page.locator('#bowler').input_value(), 'Test player 6')
-        self.assertEqual(self.run_js('inningsStats(1).legal'), 24)
+        self.assertEqual(self.run_js('inningsStats(1).legal'), 72)
 
     def test_players_persist_and_duplicates_are_rejected(self):
         self.page.reload()
